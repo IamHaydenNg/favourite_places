@@ -14,6 +14,7 @@ class _AddPlacesScreenState extends State<AddPlacesScreen> {
 
   @override
   void dispose() {
+    // Clean up the controller when the widget is removed from the widget tree.
     _titleController.dispose();
     super.dispose();
   }
