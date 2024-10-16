@@ -15,6 +15,8 @@ class UserPlacesNotifier extends StateNotifier<List<Place>> {
   }
 }
 
-final userPlaceProvider = StateNotifierProvider(
+final userPlaceProvider =
+    // The first type is return type UserPlacesNotifier, the second type is the eventually return type of UserPlacesNotifier (List<Place>)
+    StateNotifierProvider<UserPlacesNotifier, List<Place>>(
   (ref) => UserPlacesNotifier(),
 );
