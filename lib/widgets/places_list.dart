@@ -23,6 +23,10 @@ class PlacesList extends StatelessWidget {
     return ListView.builder(
       itemCount: place.length,
       itemBuilder: (ctx, index) => ListTile(
+        leading: CircleAvatar(
+          radius: 26,
+          backgroundImage: FileImage(place[index].image),
+        ),
         title: Text(
           place[index].title,
           style: Theme.of(context).textTheme.titleMedium!.copyWith(
