@@ -1,5 +1,7 @@
+import 'package:favourite_places/models/place.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:osm_nominatim/osm_nominatim.dart';
 
 class LocationInput extends StatefulWidget {
   const LocationInput({super.key});
@@ -11,7 +13,7 @@ class LocationInput extends StatefulWidget {
 }
 
 class _LocationInputState extends State<LocationInput> {
-  Location? _pickLocation;
+  PlaceLocation? _pickLocation;
   var _isGettingLocation = false;
 
   void _getCurrentLocation() async {
@@ -42,13 +44,29 @@ class _LocationInputState extends State<LocationInput> {
     });
 
     locationData = await location.getLocation();
+    final lat = locationData.latitude;
+    final lon = locationData.longitude;
+
+    if (lat == null || lon == null) {
+      return;
+    }
+
+    final reverseSearchResult = await Nominatim.reverseSearch(
+      lat: lat,
+      lon: lon,
+      addressDetails: true,
+      extraTags: true,
+      nameDetails: true,
+    );
 
     setState(() {
+      _pickLocation = PlaceLocation(
+        latitude: lat,
+        longitude: lon,
+        address: reverseSearchResult.displayName,
+      );
       _isGettingLocation = false;
     });
-
-    print(locationData.latitude);
-    print(locationData.longitude);
   }
 
   @override

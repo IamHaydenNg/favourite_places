@@ -169,7 +169,7 @@ packages:
     source: hosted
     version: "6.2.1"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: b9c29a161230ee03d3ccf545097fccd9b87a5264228c5d348202e0f0c28f9010
@@ -344,6 +344,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  osm_nominatim:
+    dependency: "direct main"
+    description:
+      name: osm_nominatim
+      sha256: "08c1b00dbf7869a64068970df913a299b11e056c8a905ed2397879b6a1f9d7ef"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
   path:
     dependency: transitive
     description:
