@@ -27,9 +27,10 @@ final theme = ThemeData().copyWith(
 );
 
 void main() {
-  // Register riverpod provider. So this is needed to able to access riverpod and
-  // its features and our providers from inside of the widgets that make up our app.
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(
+    // Register riverpod provider. So this is needed to able to access riverpod and
+    // its features and our providers from inside of the widgets that make up our app.
     const ProviderScope(
       child: MyApp(),
     ),

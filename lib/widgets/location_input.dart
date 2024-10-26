@@ -1,5 +1,6 @@
 import 'package:favourite_places/models/place.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:location/location.dart';
 import 'package:osm_nominatim/osm_nominatim.dart';
 
@@ -13,8 +14,10 @@ class LocationInput extends StatefulWidget {
 }
 
 class _LocationInputState extends State<LocationInput> {
-  PlaceLocation? _pickLocation;
+  PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
+  static double? _latitude;
+  static double? _longitude;
 
   void _getCurrentLocation() async {
     Location location = Location();
@@ -60,14 +63,35 @@ class _LocationInputState extends State<LocationInput> {
     );
 
     setState(() {
-      _pickLocation = PlaceLocation(
+      _pickedLocation = PlaceLocation(
         latitude: lat,
         longitude: lon,
         address: reverseSearchResult.displayName,
       );
+      _latitude = lat;
+      _longitude = lon;
       _isGettingLocation = false;
     });
   }
+
+  late Widget staticMap = OSMViewer(
+    controller: SimpleMapController(
+      initPosition: GeoPoint(
+        latitude: _latitude!,
+        longitude: _longitude!,
+      ),
+      markerHome: const MarkerIcon(
+        icon: Icon(
+          Icons.location_on,
+          color: Colors.red,
+        ),
+      ),
+    ),
+    zoomOption: const ZoomOption(
+      initZoom: 16,
+      minZoomLevel: 11,
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +104,10 @@ class _LocationInputState extends State<LocationInput> {
 
     if (_isGettingLocation) {
       previewContent = const CircularProgressIndicator();
+    }
+
+    if (_pickedLocation != null) {
+      previewContent = staticMap;
     }
 
     return Column(
