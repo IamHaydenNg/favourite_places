@@ -5,7 +5,9 @@ import 'package:location/location.dart';
 import 'package:osm_nominatim/osm_nominatim.dart';
 
 class LocationInput extends StatefulWidget {
-  const LocationInput({super.key});
+  const LocationInput({super.key, required this.onSelectLocation});
+
+  final void Function(PlaceLocation location) onSelectLocation;
 
   @override
   State<LocationInput> createState() {
@@ -72,6 +74,8 @@ class _LocationInputState extends State<LocationInput> {
       _longitude = lon;
       _isGettingLocation = false;
     });
+
+    widget.onSelectLocation(_pickedLocation!);
   }
 
   late Widget staticMap = OSMViewer(
