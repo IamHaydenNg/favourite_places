@@ -1,4 +1,5 @@
 import 'package:favourite_places/models/place.dart';
+import 'package:favourite_places/screens/map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 
@@ -9,24 +10,45 @@ class PlacesDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    late Widget staticMap = OSMViewer(
-      controller: SimpleMapController(
-        initPosition: GeoPoint(
-          latitude: place.location.latitude,
-          longitude: place.location.longitude,
-        ),
-        markerHome: const MarkerIcon(
-          icon: Icon(
-            Icons.location_on,
-            color: Colors.red,
+    late Widget staticMap = Stack(alignment: Alignment.center, children: [
+      SizedBox(
+        height: 100,
+        width: 100,
+        child: OSMViewer(
+          controller: SimpleMapController(
+            initPosition: GeoPoint(
+              latitude: place.location.latitude,
+              longitude: place.location.longitude,
+            ),
+            markerHome: const MarkerIcon(
+              icon: Icon(
+                Icons.location_on,
+                color: Colors.red,
+              ),
+            ),
+          ),
+          zoomOption: const ZoomOption(
+            initZoom: 16,
+            minZoomLevel: 11,
           ),
         ),
       ),
-      zoomOption: const ZoomOption(
-        initZoom: 16,
-        minZoomLevel: 11,
+      GestureDetector(
+        onTap: () {
+          print('hello');
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (ctx) => const MapScreen(),
+            ),
+          );
+        },
+        child: Container(
+          width: 110,
+          height: 110,
+          color: const Color.fromARGB(0, 255, 255, 255),
+        ),
       ),
-    );
+    ]);
 
     return Scaffold(
       appBar: AppBar(
@@ -46,11 +68,7 @@ class PlacesDetailScreen extends StatelessWidget {
             right: 0,
             child: Column(
               children: [
-                SizedBox(
-                  height: 100,
-                  width: 100,
-                  child: staticMap,
-                ),
+                staticMap,
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 24,
