@@ -1,4 +1,5 @@
 import 'package:favourite_places/screens/places.dart';
+import 'package:favourite_places/widgets/map_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
       title: 'Great Places',
       theme: theme,
       home: const PlacesListScreen(),
+      // home: const LocationAppExample(),
     );
   }
 }

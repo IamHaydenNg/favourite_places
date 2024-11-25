@@ -1,4 +1,5 @@
 import 'package:favourite_places/models/place.dart';
+import 'package:favourite_places/screens/map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:location/location.dart';
@@ -18,8 +19,8 @@ class LocationInput extends StatefulWidget {
 class _LocationInputState extends State<LocationInput> {
   PlaceLocation? _pickedLocation;
   var _isGettingLocation = false;
-  static double? _latitude;
-  static double? _longitude;
+  double? _latitude;
+  double? _longitude;
 
   void _getCurrentLocation() async {
     Location location = Location();
@@ -46,6 +47,7 @@ class _LocationInputState extends State<LocationInput> {
 
     setState(() {
       _isGettingLocation = true;
+      _pickedLocation = null;
     });
 
     locationData = await location.getLocation();
@@ -73,6 +75,30 @@ class _LocationInputState extends State<LocationInput> {
       _latitude = lat;
       _longitude = lon;
       _isGettingLocation = false;
+    });
+
+    widget.onSelectLocation(_pickedLocation!);
+  }
+
+  void _selectedOnMap() async {
+    setState(() {
+      _pickedLocation = null;
+    });
+
+    final pickedLocation = await Navigator.of(context).push<PlaceLocation>(
+      MaterialPageRoute(
+        builder: (ctx) => const MapScreen(),
+      ),
+    );
+
+    if (pickedLocation == null) {
+      return;
+    }
+
+    setState(() {
+      _pickedLocation = pickedLocation;
+      _latitude = pickedLocation.latitude;
+      _longitude = pickedLocation.longitude;
     });
 
     widget.onSelectLocation(_pickedLocation!);
@@ -139,7 +165,7 @@ class _LocationInputState extends State<LocationInput> {
             TextButton.icon(
               label: const Text('Select on Map'),
               icon: const Icon(Icons.map),
-              onPressed: () {},
+              onPressed: _selectedOnMap,
             )
           ],
         ),

@@ -1,6 +1,8 @@
 import 'package:favourite_places/models/place.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:osm_nominatim/osm_nominatim.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({
@@ -23,12 +25,14 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  late final mapController = MapController.withPosition(
+  late final pickerController = PickerMapController(
     initPosition: GeoPoint(
       latitude: widget.location.latitude,
       longitude: widget.location.longitude,
     ),
   );
+
+  PlaceLocation? _pickedLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -37,44 +41,45 @@ class _MapScreenState extends State<MapScreen> {
         title: Text(
           widget.isSelecting ? 'Pick your Location' : 'Your Location',
         ),
-        actions: [
-          if (widget.isSelecting)
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.save),
-            ),
-        ],
       ),
-      body: OSMFlutter(
-        controller: mapController,
-        osmOption: OSMOption(
-          userTrackingOption: const UserTrackingOption(
-            enableTracking: true,
-            unFollowUser: false,
+      body: CustomPickerLocation(
+        controller: pickerController,
+        showDefaultMarkerPickWidget: true,
+        bottomWidgetPicker: Positioned(
+          bottom: 12,
+          right: 8,
+          child: PointerInterceptor(
+            child: FloatingActionButton(
+              onPressed: () async {
+                GeoPoint p =
+                    await pickerController.selectAdvancedPositionPicker();
+                if (!context.mounted) return;
+
+                final reverseSearchResult = await Nominatim.reverseSearch(
+                  lat: p.latitude,
+                  lon: p.longitude,
+                  addressDetails: true,
+                  extraTags: true,
+                  nameDetails: true,
+                );
+
+                setState(() {
+                  _pickedLocation = PlaceLocation(
+                    latitude: p.latitude,
+                    longitude: p.longitude,
+                    address: reverseSearchResult.displayName,
+                  );
+                });
+
+                Navigator.of(context).pop(_pickedLocation);
+              },
+              child: const Text('Confirm'),
+            ),
           ),
-          zoomOption: const ZoomOption(
+        ),
+        pickerConfig: const CustomPickerLocationConfig(
+          zoomOption: ZoomOption(
             initZoom: 8,
-            minZoomLevel: 3,
-            maxZoomLevel: 19,
-            stepZoom: 1.0,
-          ),
-          userLocationMarker: UserLocationMaker(
-            personMarker: const MarkerIcon(
-              icon: Icon(
-                Icons.person_pin_circle,
-                color: Colors.red,
-                size: 48,
-              ),
-            ),
-            directionArrowMarker: const MarkerIcon(
-              icon: Icon(
-                Icons.double_arrow,
-                size: 48,
-              ),
-            ),
-          ),
-          roadConfiguration: const RoadOption(
-            roadColor: Colors.yellowAccent,
           ),
         ),
       ),
